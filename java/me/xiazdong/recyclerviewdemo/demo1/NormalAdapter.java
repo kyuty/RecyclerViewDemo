@@ -10,9 +10,10 @@ import java.util.List;
 
 import me.xiazdong.recyclerviewdemo.R;
 
-public class NormalAdapter extends RecyclerView.Adapter<NormalAdapter.VH>{
+public class NormalAdapter extends RecyclerView.Adapter<NormalAdapter.VH> {
 
     private List<ObjectModel> mDatas;
+
     public NormalAdapter(List<ObjectModel> data) {
         this.mDatas = data;
     }
@@ -41,9 +42,10 @@ public class NormalAdapter extends RecyclerView.Adapter<NormalAdapter.VH>{
         return new VH(v);
     }
 
-    public static class VH extends RecyclerView.ViewHolder{
+    public static class VH extends RecyclerView.ViewHolder {
         public final TextView title;
         public final TextView number;
+
         public VH(View v) {
             super(v);
             title = (TextView) v.findViewById(R.id.title);
