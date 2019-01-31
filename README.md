@@ -1,5 +1,7 @@
-1. pkg: me.xiazdong.recyclerviewdemo
-2. 
+1. AndroidManifest.xml pkg: me.xiazdong.recyclerviewdemo
+2. build.gradle
+
+```
 android {
     compileSdkVersion 24
     defaultConfig {
@@ -15,3 +17,4 @@ dependencies {
     implementation 'com.daimajia.numberprogressbar:library:1.2@aar'
     implementation 'jp.wasabeef:recyclerview-animators:2.2.4'
 }
+```
