@@ -1,6 +1,6 @@
 package me.xiazdong.recyclerviewdemo.demo3;
 
-import android.support.v7.widget.RecyclerView;
+import android.support.smv7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;

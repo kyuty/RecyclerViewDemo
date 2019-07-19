@@ -1,6 +1,6 @@
 package me.xiazdong.recyclerviewdemo.demo6;
 
-import android.support.v7.widget.RecyclerView;
+import android.support.smv7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;

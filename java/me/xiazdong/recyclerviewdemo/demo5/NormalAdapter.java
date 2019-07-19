@@ -1,6 +1,6 @@
 package me.xiazdong.recyclerviewdemo.demo5;
 
-import android.support.v7.widget.RecyclerView;
+import android.support.smv7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +9,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.xiazdong.recyclerviewdemo.R;
-import me.xiazdong.recyclerviewdemo.demo1.ObjectModel;
 
 public class NormalAdapter extends RecyclerView.Adapter<NormalAdapter.VH>{
 

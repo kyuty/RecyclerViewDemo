@@ -2,20 +2,15 @@ package me.xiazdong.recyclerviewdemo.demo5;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.smv7.widget.LinearLayoutManager;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.xiazdong.recyclerviewdemo.R;
-import me.xiazdong.recyclerviewdemo.demo1.ObjectModel;
 
 /**
  * RecyclerView实现setEmptyView()

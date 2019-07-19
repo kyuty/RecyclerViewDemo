@@ -1,18 +1,15 @@
 package me.xiazdong.recyclerviewdemo.demo6;
 
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import android.support.smv7.widget.RecyclerView;
+import android.support.smv7.widget.SimpleItemAnimator;
+import android.support.smv7.widget.StaggeredGridLayoutManager;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.xiazdong.recyclerviewdemo.R;

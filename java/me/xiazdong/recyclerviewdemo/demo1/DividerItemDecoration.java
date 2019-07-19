@@ -20,11 +20,9 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.smv7.widget.LinearLayoutManager;
+import android.support.smv7.widget.RecyclerView;
 import android.view.View;
-
-import me.xiazdong.recyclerviewdemo.R;
 
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private static final int[] ATTRS = new int[]{

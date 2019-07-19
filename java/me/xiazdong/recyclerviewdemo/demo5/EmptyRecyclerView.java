@@ -2,10 +2,9 @@ package me.xiazdong.recyclerviewdemo.demo5;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import android.support.smv7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 
 /**
  * Created by xiazdong on 16/10/7.

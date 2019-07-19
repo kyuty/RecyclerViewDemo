@@ -2,9 +2,8 @@ package me.xiazdong.recyclerviewdemo.demo4;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
+import android.support.smv7.widget.LinearLayoutManager;
+import android.support.smv7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;

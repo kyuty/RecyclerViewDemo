@@ -1,7 +1,7 @@
 package me.xiazdong.recyclerviewdemo.demo3;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.support.smv7.widget.RecyclerView;
+import android.support.smv7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 
 import java.util.Collections;
