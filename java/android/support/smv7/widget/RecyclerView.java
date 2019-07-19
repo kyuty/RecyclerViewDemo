@@ -74,6 +74,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -364,12 +365,18 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
 
     /**
      * The RecyclerView is not currently scrolling.
+     *
+     * 没有滚动
+     *
      * @see #getScrollState()
      */
     public static final int SCROLL_STATE_IDLE = 0;
 
     /**
      * The RecyclerView is currently being dragged by outside input such as user touch input.
+     *
+     * 正在被外部拖拽,一般为用户正在用手指滚动
+     *
      * @see #getScrollState()
      */
     public static final int SCROLL_STATE_DRAGGING = 1;
@@ -377,6 +384,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
     /**
      * The RecyclerView is currently animating to a final position while not under
      * outside control.
+     *
+     * 自动滚动，无touch情况下的滚动
+     *
      * @see #getScrollState()
      */
     public static final int SCROLL_STATE_SETTLING = 2;
@@ -421,7 +431,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
     private NestedScrollingChildHelper mScrollingChildHelper;
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
-    private final int[] mNestedOffsets = new int[2];
+    private final int[] mNestedOffsets = new int[2]; // 嵌套位移
 
     private Runnable mItemAnimatorRunner = new Runnable() {
         @Override
@@ -2434,6 +2444,13 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
         }
     }
 
+    /**
+     * intercept touch事件给每个Item.
+     * 这里的item不是显示的item，这里仅仅是遍历外界传入进来OnItemTouchListener，优先处理touch。
+     *
+     * @param e
+     * @return
+     */
     private boolean dispatchOnItemTouchIntercept(MotionEvent e) {
         final int action = e.getAction();
         if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_DOWN) {
@@ -2441,9 +2458,11 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
         }
 
         final int listenerCount = mOnItemTouchListeners.size();
+        System.out.println(TAG + " dispatchOnItemTouchIntercept listenerCount = " + listenerCount);
         for (int i = 0; i < listenerCount; i++) {
             final OnItemTouchListener listener = mOnItemTouchListeners.get(i);
             if (listener.onInterceptTouchEvent(this, e) && action != MotionEvent.ACTION_CANCEL) {
+                // 若成功处理，则记录listener给mActiveOnItemTouchListener
                 mActiveOnItemTouchListener = listener;
                 return true;
             }
@@ -2467,6 +2486,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
             }
         }
 
+        // ACTION_DOWN事件已经在dispatchOnItemTouchIntercept方法被listener处理掉了，所以这里跳过ACTION_DOWN事件
         // Listeners will have already received the ACTION_DOWN via dispatchOnItemTouchIntercept
         // as called from onInterceptTouchEvent; skip it.
         if (action != MotionEvent.ACTION_DOWN) {
@@ -2484,12 +2504,15 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
+        System.out.println(TAG + " onInterceptTouchEvent e = " + e.toString());
         if (mLayoutFrozen) {
             // When layout is frozen,  RV does not intercept the motion event.
             // A child view e.g. a button may still get the click.
+            System.out.println(TAG + " onInterceptTouchEvent mLayoutFrozen = " + mLayoutFrozen + " return false");
             return false;
         }
         if (dispatchOnItemTouchIntercept(e)) {
+            System.out.println(TAG + " onInterceptTouchEvent dispatchOnItemTouchIntercept return true");
             cancelTouch();
             return true;
         }
@@ -2500,6 +2523,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
 
         final boolean canScrollHorizontally = mLayout.canScrollHorizontally();
         final boolean canScrollVertically = mLayout.canScrollVertically();
+        System.out.println(TAG + " onInterceptTouchEvent canScrollHorizontally = " + canScrollHorizontally + " canScrollVertically = " + canScrollVertically);
 
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
@@ -2519,6 +2543,8 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
                 mInitialTouchY = mLastTouchY = (int) (e.getY() + 0.5f);
 
                 if (mScrollState == SCROLL_STATE_SETTLING) {
+                    // 若当前的rv正在处于自然滚动状态，此时touch down过来了，
+                    // 则关闭父view的touch，设置自己scroll状态为dragging
                     getParent().requestDisallowInterceptTouchEvent(true);
                     setScrollState(SCROLL_STATE_DRAGGING);
                 }
@@ -2537,6 +2563,8 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
                 break;
 
             case MotionEventCompat.ACTION_POINTER_DOWN:
+                // rv永远以最后一个touch down点为生效点,
+                // 所以当touch pointer down过来时，都需要更新状态
                 mScrollPointerId = e.getPointerId(actionIndex);
                 mInitialTouchX = mLastTouchX = (int) (e.getX(actionIndex) + 0.5f);
                 mInitialTouchY = mLastTouchY = (int) (e.getY(actionIndex) + 0.5f);
@@ -2553,6 +2581,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
                 final int x = (int) (e.getX(index) + 0.5f);
                 final int y = (int) (e.getY(index) + 0.5f);
                 if (mScrollState != SCROLL_STATE_DRAGGING) {
+                    // 超过touch slop的距离就不再进入该分支了
+                    // mLastTouchX mLastTouchY设置为touch down时的一个touchSlop距离的位置
+                    // 最后设置scroll状态为drag
                     final int dx = x - mInitialTouchX;
                     final int dy = y - mInitialTouchY;
                     boolean startScroll = false;
@@ -2583,6 +2614,8 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
                 cancelTouch();
             }
         }
+        // 只有当前处于drag状态时，才intercept touch
+        System.out.println(TAG + " onInterceptTouchEvent return = " + (mScrollState == SCROLL_STATE_DRAGGING));
         return mScrollState == SCROLL_STATE_DRAGGING;
     }
 
@@ -2598,10 +2631,13 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
+        System.out.println(TAG + " onTouchEvent e = " + e.toString());
         if (mLayoutFrozen || mIgnoreMotionEventTillDown) {
+            System.out.println(TAG + " onTouchEvent mLayoutFrozen = " + mLayoutFrozen + " mIgnoreMotionEventTillDown = " + mIgnoreMotionEventTillDown);
             return false;
         }
         if (dispatchOnItemTouch(e)) {
+            System.out.println(TAG + " onTouchEvent dispatchOnItemTouch return true");
             cancelTouch();
             return true;
         }
@@ -2612,12 +2648,14 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
 
         final boolean canScrollHorizontally = mLayout.canScrollHorizontally();
         final boolean canScrollVertically = mLayout.canScrollVertically();
+        System.out.println(TAG + " onTouchEvent canScrollHorizontally = " + canScrollHorizontally + " canScrollVertically = " + canScrollVertically);
 
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         }
         boolean eventAddedToVelocityTracker = false;
 
+        // velocity tracker event
         final MotionEvent vtev = MotionEvent.obtain(e);
         final int action = MotionEventCompat.getActionMasked(e);
         final int actionIndex = MotionEventCompat.getActionIndex(e);
@@ -2663,6 +2701,10 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
                 int dy = mLastTouchY - y;
 
                 if (dispatchNestedPreScroll(dx, dy, mScrollConsumed, mScrollOffset)) {
+                    System.out.println(TAG + " onTouchEvent dispatchNestedPreScroll true");
+                    System.out.println(TAG + " onTouchEvent dispatchNestedPreScroll mScrollConsumed = " + Arrays.toString(mScrollConsumed)
+                                            + " mScrollOffset = " + Arrays.toString(mScrollOffset));
+                    // 位移dx，dy需要减去父View消耗的scroll位移
                     dx -= mScrollConsumed[0];
                     dy -= mScrollConsumed[1];
                     vtev.offsetLocation(mScrollOffset[0], mScrollOffset[1]);
@@ -2672,6 +2714,8 @@ public class RecyclerView extends ViewGroup implements ScrollingView, NestedScro
                 }
 
                 if (mScrollState != SCROLL_STATE_DRAGGING) {
+                    // 这里应该永远进不来才对????
+                    System.out.println(TAG + " onTouchEvent mScrollState = " + mScrollState + " ??????");
                     boolean startScroll = false;
                     if (canScrollHorizontally && Math.abs(dx) > mTouchSlop) {
                         if (dx > 0) {
