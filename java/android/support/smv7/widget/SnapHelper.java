@@ -19,6 +19,7 @@ package android.support.smv7.widget;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Scroller;
@@ -167,6 +168,7 @@ public abstract class SnapHelper extends RecyclerView.OnFlingListener {
             return false;
         }
 
+        //Log.d("smoothScrollToPosition", "snapFromFling targetPosition = " + targetPosition);
         smoothScroller.setTargetPosition(targetPosition);
         layoutManager.startSmoothScroll(smoothScroller);
         return true;
