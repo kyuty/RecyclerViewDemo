@@ -431,7 +431,6 @@ public class LinearLayoutManager extends android.support.smv7.widget.RecyclerVie
         android.support.smv7.widget.LinearSmoothScroller linearSmoothScroller =
                 new LinearSmoothScroller(recyclerView.getContext());
         linearSmoothScroller.setTargetPosition(position);
-        Log.d(TAG, "scroll smoothScrollToPosition position = " + position);
         startSmoothScroll(linearSmoothScroller);
     }
 
@@ -1139,70 +1138,40 @@ public class LinearLayoutManager extends android.support.smv7.widget.RecyclerVie
         return mSmoothScrollbarEnabled;
     }
 
-    //private int mLastLayoutDirection = 0;
-
     private void updateLayoutState(int layoutDirection, int requiredSpace,
             boolean canUseExistingSpace, android.support.smv7.widget.RecyclerView.State state) {
         // If parent provides a hint, don't measure unlimited.
         mLayoutState.mInfinite = resolveIsInfinite();
         mLayoutState.mExtra = getExtraLayoutSpace(state);
         mLayoutState.mLayoutDirection = layoutDirection;
-        //Log.d(TAG, "updateLayoutState 222222222222222222222222222222 ===== begin");
-        //Log.d(TAG, "updateLayoutState requiredSpace = " + requiredSpace);
-        //Log.d(TAG, "updateLayoutState mExtra = " + mLayoutState.mExtra + " mLayoutDirection = " + mLayoutState.mLayoutDirection);
-        //View firstOrEndChild;
         int scrollingOffset;
         if (layoutDirection == LayoutState.LAYOUT_END) {
-            //Log.d(TAG, "updateLayoutState 1 layoutDirection is layout_end");
             mLayoutState.mExtra += mOrientationHelper.getEndPadding();
-            //Log.d(TAG, "updateLayoutState 1 getEndPadding = " + mOrientationHelper.getEndPadding() + " mExtra = " + mLayoutState.mExtra);
             // get the first child in the direction we are going
             final View child = getChildClosestToEnd();
-            //firstOrEndChild = getChildAt(getChildCount());
-            //if (firstOrEndChild != child) {
-            //    firstOrEndChild = null;
-            //}
             // the direction in which we are traversing children
             mLayoutState.mItemDirection = mShouldReverseLayout ? LayoutState.ITEM_DIRECTION_HEAD
                     : LayoutState.ITEM_DIRECTION_TAIL;
-            //Log.d(TAG, "updateLayoutState 1 mItemDirection = " + mLayoutState.mItemDirection);
             mLayoutState.mCurrentPosition = getPosition(child) + mLayoutState.mItemDirection;
-            //Log.d(TAG, "updateLayoutState 1 mCurrentPosition = " + mLayoutState.mCurrentPosition);
             mLayoutState.mOffset = mOrientationHelper.getDecoratedEnd(child);
-            //Log.d(TAG, "updateLayoutState 1 mOffset = " + mLayoutState.mOffset);
             // calculate how much we can scroll without adding new children (independent of layout)
-            scrollingOffset = mLayoutState.mOffset - mOrientationHelper.getEndAfterPadding();
-            Log.d(TAG, "updateLayoutState 1 scrollingOffset = " + scrollingOffset);
+            scrollingOffset = mOrientationHelper.getDecoratedEnd(child)
+                    - mOrientationHelper.getEndAfterPadding();
+
         } else {
-            //Log.d(TAG, "updateLayoutState 2 layoutDirection is layout_start");
             final View child = getChildClosestToStart();
-            //firstOrEndChild = getChildAt(0);
-            //if (firstOrEndChild != child) {
-            //    firstOrEndChild = null;
-            //}
             mLayoutState.mExtra += mOrientationHelper.getStartAfterPadding();
-            //Log.d(TAG, "updateLayoutState 2 getEndPadding = " + mOrientationHelper.getEndPadding() + " mExtra = " + mLayoutState.mExtra);
             mLayoutState.mItemDirection = mShouldReverseLayout ? LayoutState.ITEM_DIRECTION_TAIL
                     : LayoutState.ITEM_DIRECTION_HEAD;
-            //Log.d(TAG, "updateLayoutState 2 mItemDirection = " + mLayoutState.mItemDirection);
             mLayoutState.mCurrentPosition = getPosition(child) + mLayoutState.mItemDirection;
-            //Log.d(TAG, "updateLayoutState 2 mCurrentPosition = " + mLayoutState.mCurrentPosition);
             mLayoutState.mOffset = mOrientationHelper.getDecoratedStart(child);
-            //Log.d(TAG, "updateLayoutState 2 mOffset = " + mLayoutState.mOffset + " child = " + child.toString());
-            scrollingOffset = -mLayoutState.mOffset + mOrientationHelper.getStartAfterPadding();
-            Log.d(TAG, "updateLayoutState 2 scrollingOffset = " + scrollingOffset);
+            scrollingOffset = -mOrientationHelper.getDecoratedStart(child)
+                    + mOrientationHelper.getStartAfterPadding();
         }
-
-        //if (firstOrEndChild != null) {
-        //    Log.d(TAG, "updateLayoutState firstOrEndChild = " + firstOrEndChild.toString());
-        //}
-
         mLayoutState.mAvailable = requiredSpace;
         if (canUseExistingSpace) {
             mLayoutState.mAvailable -= scrollingOffset;
         }
-        Log.d(TAG, "updateLayoutState mLayoutState.mAvailable = " + mLayoutState.mAvailable);
-        //Log.d(TAG, "updateLayoutState 222222222222222222222222222222 ===== end");
         mLayoutState.mScrollingOffset = scrollingOffset;
     }
 
@@ -1211,107 +1180,30 @@ public class LinearLayoutManager extends android.support.smv7.widget.RecyclerVie
                 && mOrientationHelper.getEnd() == 0;
     }
 
-    //private int mSaveOffset;
-    //private android.support.smv7.widget.RecyclerView.Recycler mRecycler;
-    //private android.support.smv7.widget.RecyclerView.State mState;
-
     int scrollBy(int dy, android.support.smv7.widget.RecyclerView.Recycler recycler, android.support.smv7.widget.RecyclerView.State state) {
         if (getChildCount() == 0 || dy == 0) {
             return 0;
         }
-        Log.d(TAG, "scrollBy ------------------------------- begin");
-        Log.d(TAG, "scrollBy dy = " + dy);
         mLayoutState.mRecycle = true;
         ensureLayoutState();
         final int layoutDirection = dy > 0 ? LayoutState.LAYOUT_END : LayoutState.LAYOUT_START;
         final int absDy = Math.abs(dy);
         updateLayoutState(layoutDirection, absDy, true, state);
-
-        // ------------------ ori code --------------- begin
-//        final int consumed = mLayoutState.mScrollingOffset
-//                + fill(recycler, mLayoutState, state, false);
-//        if (consumed < 0) {
-//            if (DEBUG) {
-//                Log.d(TAG, "Don't have any more elements to scroll");
-//            }
-//            return 0;
-//        }
-//        final int scrolled = absDy > consumed ? layoutDirection * consumed : dy;
-        // ------------------ ori code --------------- end
-
-        // ------------------ my change code --------------- begin
-        int fill = fill(recycler, mLayoutState, state, false);
-        final int consumed = mLayoutState.mScrollingOffset + fill;
-        Log.e(TAG, "scrollBy fill = " + fill + " mScrollingOffset = " + mLayoutState.mScrollingOffset);
-        int scrolled = absDy > consumed ? layoutDirection * consumed : dy;
-        Log.e(TAG, "scrollBy consumed = " + consumed + " scrolled = " + scrolled);
-        if (scrolled != dy) {
-            Log.e(TAG, "scrollBy 123123");
-
-//            if (mLastLayoutDirection == 0
-//                    || mLastLayoutDirection != layoutDirection) {
-//                int scrollingOffset;
-//                if (layoutDirection == LayoutState.LAYOUT_END) {
-//                    //Log.d(TAG, "updateLayoutState 1 layoutDirection is layout_end");
-//                    final View child = getChildClosestToEnd();
-//                    mSaveOffset = mOrientationHelper.getDecoratedEnd(child);
-//                    Log.d(TAG, "scrollBy 1 mSaveOffset = " + mSaveOffset);
-//                    // calculate how much we can scroll without adding new children (independent of layout)
-//                    //scrollingOffset = mLayoutState.mOffset - mOrientationHelper.getEndAfterPadding();
-//                    //Log.d(TAG, "updateLayoutState 1 scrollingOffset = " + scrollingOffset);
-//                } else {
-//                    //Log.d(TAG, "updateLayoutState 2 layoutDirection is layout_start");
-//                    final View child = getChildClosestToStart();
-//                    mSaveOffset = mOrientationHelper.getDecoratedStart(child);
-//                    Log.d(TAG, "scrollBy 2 mSaveOffset = " + mSaveOffset);
-//                    //scrollingOffset = -mLayoutState.mOffset + mOrientationHelper.getStartAfterPadding();
-//                    //Log.d(TAG, "updateLayoutState 2 scrollingOffset = " + scrollingOffset);
-//                }
-//                mRecycler = recycler;
-//                mState = state;
-//            }
-//
-//            mLastLayoutDirection = layoutDirection;
-
-            scrolled = dy;
+        final int consumed = mLayoutState.mScrollingOffset
+                + fill(recycler, mLayoutState, state, false);
+        if (consumed < 0) {
+            if (DEBUG) {
+                Log.d(TAG, "Don't have any more elements to scroll");
+            }
+            return 0;
         }
-        Log.d(TAG, "scrollBy offsetChildren scrolled = " + scrolled);
-        // ------------------ my change code --------------- end
-
+        final int scrolled = absDy > consumed ? layoutDirection * consumed : dy;
         mOrientationHelper.offsetChildren(-scrolled);
         if (DEBUG) {
             Log.d(TAG, "scroll req: " + dy + " scrolled: " + scrolled);
         }
         mLayoutState.mLastScrollDelta = scrolled;
-        Log.d(TAG, "scrollBy ------------------------------- end");
         return scrolled;
-        //return dy;
-    }
-
-    @Override
-    public void touchUpOrCancel() {
-//        Log.e(TAG, "touchUpOrCancel mLastLayoutDirection = " + mLastLayoutDirection);
-//        if (mLastLayoutDirection == LayoutState.LAYOUT_START
-//                || mLastLayoutDirection == LayoutState.LAYOUT_END) {
-//            int pos = mLastLayoutDirection == LayoutState.LAYOUT_START ? 0 : getChildCount();
-//            Log.e(TAG, "touchUpOrCancel pos = " + pos);
-//            //scrollToPosition(pos);
-//
-//            mRecyclerView.smoothScrollToPosition(pos);
-//
-////            final View child = mLastLayoutDirection == LayoutState.LAYOUT_START ?
-////                    getChildClosestToStart(): getChildClosestToEnd();
-////            int offset = mOrientationHelper.getDecoratedStart(child);
-////            Log.d(TAG, "touchUpOrCancel offset = " + offset + " mSaveOffset = " + mSaveOffset);
-////
-////            scrollBy(offset - mSaveOffset, mRecycler, mState);
-//
-//        }
-//        mLastLayoutDirection = 0;
-    }
-
-    public android.support.smv7.widget.OrientationHelper getOrientationHelper() {
-        return mOrientationHelper;
     }
 
     @Override
