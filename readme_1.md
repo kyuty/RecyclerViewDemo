@@ -238,7 +238,7 @@ mData.remove(0);
 mAdapter.notifyItemRemoved(1);
 ```
 
-// notifyDataSetChanged ：它会强制跟新所有数据以及布局，耗时
+// notifyDataSetChanged ：它会强制更新所有数据以及布局，耗时
 
 ```
 mAdapter.notifyDataSetChanged();
