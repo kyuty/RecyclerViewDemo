@@ -2,13 +2,82 @@
 
 这个demo的ItemDecoration好像不太管用，不要看这个。
 
+```
 DividerItemDecoration extends RecyclerView.ItemDecoration
+```
 
 继承RecyclerView.ItemDecoration，可以控制每个item之间的间隔
 
-重写 onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) 
+// 重写 `onDraw` 和 `getItemOffsets`
 
-重写 getItemOffsets
+```
+/**
+ * 画分割线
+ */
+@Override
+public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    if (mOrientation == VERTICAL_LIST) {
+        drawVertical(c, parent);
+    } else {
+        drawHorizontal(c, parent);
+    }
+}
+
+public void drawVertical(Canvas c, RecyclerView parent) {
+    final int left = parent.getPaddingLeft();
+    final int right = parent.getWidth() - parent.getPaddingRight();
+    final int childCount = parent.getChildCount();
+    //Log.e("drawVertical", "left = " + left + " right = " + right + " childCount = " + childCount);
+    /**
+     * 画每个item的分割线
+     */
+    for (int i = 0; i < childCount; i++) {
+        final View child = parent.getChildAt(i);
+        final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
+                .getLayoutParams();
+        final int top = child.getBottom() + params.bottomMargin +
+                Math.round(ViewCompat.getTranslationY(child));
+        //mDivider.getIntrinsicHeight() 单位dp
+        final int bottom = top + mDivider.getIntrinsicHeight();
+        //Log.e("drawVertical", "top = " + top + " bottom = " + bottom);
+        mDivider.setBounds(left, top, right, bottom);/*规定好左上角和右下角*/
+        mDivider.draw(c);
+    }
+}
+
+public void drawHorizontal(Canvas c, RecyclerView parent) {
+    final int top = parent.getPaddingTop();
+    final int bottom = parent.getHeight() - parent.getPaddingBottom();
+    final int childCount = parent.getChildCount();
+    for (int i = 0; i < childCount; i++) {
+        final View child = parent.getChildAt(i);
+        final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
+                .getLayoutParams();
+        final int left = child.getRight() + params.rightMargin +
+                Math.round(ViewCompat.getTranslationX(child));
+        final int right = left + mDivider.getIntrinsicHeight();
+        mDivider.setBounds(left, top, right, bottom);
+        mDivider.draw(c);
+    }
+}
+
+/**
+ * 确定divider的位置，设置在outRect中
+ * 这个函数在计算RecyclerView中每个child大小时会用到
+ */
+@Override
+public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    if (mOrientation == VERTICAL_LIST) {
+        int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewLayoutPosition();
+        int count = parent.getAdapter().getItemCount();
+        if (position < count - 1) {
+            outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
+        }
+    } else {
+        outRect.set(0, 0, mDivider.getIntrinsicWidth(), 0);
+    }
+}
+```
 
 // 添加ItemDecoration
 
