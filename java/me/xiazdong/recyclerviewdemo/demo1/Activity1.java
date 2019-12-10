@@ -11,6 +11,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import me.xiazdong.recyclerviewdemo.ObjectModel;
 import me.xiazdong.recyclerviewdemo.R;
 
 
@@ -39,14 +40,6 @@ public class Activity1 extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(mDecoration);
 
-//        CustomAdapter adapter = new CustomAdapter(initData());
-//        adapter.setOnClickListener(new CustomAdapter.OnClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//                Toast.makeText(Activity1.this,"position=" + position, Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
         mNoHeaderAdapter = new NormalAdapter(mData = initData());
         mAdapter = new NormalAdapterWrapper(mNoHeaderAdapter);
         View headerView = LayoutInflater.from(this).inflate(R.layout.item_header, mRecyclerView, false);
@@ -56,10 +49,10 @@ public class Activity1 extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    public ArrayList<ObjectModel> initData(){
+    public ArrayList<ObjectModel> initData() {
         ArrayList<ObjectModel> models = new ArrayList<>();
         String[] titles = getResources().getStringArray(R.array.title_array);
-        for(int i=0;i<titles.length;i++){
+        for (int i = 0; i < titles.length; i++) {
             ObjectModel model = new ObjectModel();
             model.number = i + 1;
             model.title = titles[i];
@@ -76,12 +69,12 @@ public class Activity1 extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.item_add:
                 ObjectModel obj = new ObjectModel();
                 obj.number = 0;
                 obj.title = "Insert";
-                mData.add(0,obj);
+                mData.add(0, obj);
                 mAdapter.notifyItemInserted(1);
                 break;
             case R.id.item_delete:

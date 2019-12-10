@@ -4,9 +4,9 @@ import android.support.smv7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class NormalAdapterWrapper extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class NormalAdapterWrapper extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    enum ITEM_TYPE{
+    enum ITEM_TYPE {
         HEADER,
         FOOTER,
         NORMAL
@@ -16,17 +16,17 @@ public class NormalAdapterWrapper extends RecyclerView.Adapter<RecyclerView.View
     private View mHeaderView;
     private View mFooterView;
 
-    public NormalAdapterWrapper(NormalAdapter adapter){
+    public NormalAdapterWrapper(NormalAdapter adapter) {
         mAdapter = adapter;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(position == 0){
+        if (position == 0) {
             return ITEM_TYPE.HEADER.ordinal();
-        } else if(position == mAdapter.getItemCount() + 1){
+        } else if (position == mAdapter.getItemCount() + 1) {
             return ITEM_TYPE.FOOTER.ordinal();
-        } else{
+        } else {
             return ITEM_TYPE.NORMAL.ordinal();
         }
     }
@@ -38,30 +38,33 @@ public class NormalAdapterWrapper extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(position == 0){
+        if (position == 0) {
             return;
-        } else if(position == mAdapter.getItemCount() + 1){
+        } else if (position == mAdapter.getItemCount() + 1) {
             return;
-        } else{
-            mAdapter.onBindViewHolder(((NormalAdapter.VH)holder), position - 1);
+        } else {
+            mAdapter.onBindViewHolder(((NormalAdapter.VH) holder), position - 1);
         }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == ITEM_TYPE.HEADER.ordinal()){
-            return new RecyclerView.ViewHolder(mHeaderView) {};
-        } else if(viewType == ITEM_TYPE.FOOTER.ordinal()){
-            return new RecyclerView.ViewHolder(mFooterView) {};
-        } else{
-            return mAdapter.onCreateViewHolder(parent,viewType);
+        if (viewType == ITEM_TYPE.HEADER.ordinal()) {
+            return new RecyclerView.ViewHolder(mHeaderView) {
+            };
+        } else if (viewType == ITEM_TYPE.FOOTER.ordinal()) {
+            return new RecyclerView.ViewHolder(mFooterView) {
+            };
+        } else {
+            return mAdapter.onCreateViewHolder(parent, viewType);
         }
     }
 
-    public void addHeaderView(View view){
+    public void addHeaderView(View view) {
         this.mHeaderView = view;
     }
-    public void addFooterView(View view){
+
+    public void addFooterView(View view) {
         this.mFooterView = view;
     }
 }

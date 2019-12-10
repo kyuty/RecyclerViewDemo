@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.xiazdong.recyclerviewdemo.R;
-import me.xiazdong.recyclerviewdemo.demo1.ObjectModel;
+import me.xiazdong.recyclerviewdemo.ObjectModel;
 
 public class NormalAdapter extends RecyclerView.Adapter<NormalAdapter.VH>{
 

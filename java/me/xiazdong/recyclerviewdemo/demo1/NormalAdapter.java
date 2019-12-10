@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import me.xiazdong.recyclerviewdemo.ObjectModel;
 import me.xiazdong.recyclerviewdemo.R;
 
 public class NormalAdapter extends RecyclerView.Adapter<NormalAdapter.VH> {

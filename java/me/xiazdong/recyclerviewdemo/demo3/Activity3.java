@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.xiazdong.recyclerviewdemo.R;
-import me.xiazdong.recyclerviewdemo.demo1.ObjectModel;
+import me.xiazdong.recyclerviewdemo.ObjectModel;
 
 public class Activity3 extends AppCompatActivity implements OnStartDragListener{
     private RecyclerView mRv;

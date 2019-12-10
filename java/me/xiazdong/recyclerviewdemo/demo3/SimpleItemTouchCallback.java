@@ -7,7 +7,7 @@ import android.util.Log;
 import java.util.Collections;
 import java.util.List;
 
-import me.xiazdong.recyclerviewdemo.demo1.ObjectModel;
+import me.xiazdong.recyclerviewdemo.ObjectModel;
 
 /**
  * Created by xiazdong on 16/10/6.

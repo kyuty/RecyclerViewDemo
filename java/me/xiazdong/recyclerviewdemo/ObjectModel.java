@@ -1,4 +1,4 @@
-package me.xiazdong.recyclerviewdemo.demo1;
+package me.xiazdong.recyclerviewdemo;
 
 public class ObjectModel {
     public String title;
